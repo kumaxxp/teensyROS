@@ -8,10 +8,11 @@
 
 #include <std_msgs/msg/int32.h>
 #include <std_msgs/msg/float32.h>
+#include <sensor_msgs/msg/imu.h>
 
 rcl_publisher_t publisher;
 //std_msgs__msg__Int32 msg;
-std_msgs__msg__Float32 msg;
+sensor_msgs__msg__Imu msg;
 rclc_executor_t executor;
 rclc_support_t support;
 rcl_allocator_t allocator;
@@ -46,7 +47,7 @@ rcl_timer_t timer;
 MPU6050 mpu;
 //MPU6050 mpu(0x69); // <-- use for AD0 high
 
-#define OUTPUT_READABLE_YAWPITCHROLL
+#define OUTPUT_READABLE_QUATERNION
 
 bool blinkState = false;
 
@@ -85,7 +86,6 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 {  
   RCLC_UNUSED(last_call_time);
   if (timer != NULL) {
-    msg.data = ypr[0];
     RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
   }
 }
@@ -113,7 +113,7 @@ void setup() {
   RCCHECK(rclc_publisher_init_default(
     &publisher,
     &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32),
+    ROSIDL_GET_MSG_TYPE_SUPPORT(sensor_msgs, msg, Imu),
     "micro_ros_arduino_node_publisher"));
 
   // create timer,
@@ -128,7 +128,6 @@ void setup() {
   RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
   RCCHECK(rclc_executor_add_timer(&executor, &timer));
 
-  msg.data = 0;
 }
 
 void loop() {
@@ -221,14 +220,19 @@ void IMU_loop() {
         #ifdef OUTPUT_READABLE_QUATERNION
             // display quaternion values in easy matrix form: w x y z
             mpu.dmpGetQuaternion(&q, fifoBuffer);
-            Serial.print("quat\t");
-            Serial.print(q.w);
-            Serial.print("\t");
-            Serial.print(q.x);
-            Serial.print("\t");
-            Serial.print(q.y);
-            Serial.print("\t");
-            Serial.println(q.z);
+            //Serial.print("quat\t");
+            //Serial.print(q.w);
+            //Serial.print("\t");
+            //Serial.print(q.x);
+            //Serial.print("\t");
+            //Serial.print(q.y);
+            //Serial.print("\t");
+            //Serial.println(q.z);
+
+            msg.orientation.w = q.w;
+            msg.orientation.x = q.x;
+            msg.orientation.y = q.y;
+            msg.orientation.z = q.z;            
         #endif
 
         #ifdef OUTPUT_READABLE_EULER
