@@ -9,8 +9,6 @@
 #include <std_msgs/msg/int32.h>
 #include <std_msgs/msg/float32.h>
 #include <sensor_msgs/msg/imu.h>
-#include <geometry_msgs/msg/transform_stamped.h>
-#include <tf2_msgs/msg/tf_message.h>
 
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
@@ -20,7 +18,6 @@
 rcl_publisher_t publisher;
 //std_msgs__msg__Int32 msg;
 sensor_msgs__msg__Imu msg;
-tf2_msgs__msg__TFMessage * tf_message;
 
 rclc_executor_t executor;
 rclc_support_t support;
